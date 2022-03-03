@@ -5,6 +5,7 @@ using UnityEngine.Tilemaps;
 
 public class tilemap_script : MonoBehaviour
 {
+    private playerScript playerScript;
     public TileBase[] allTiles;
     public BoundsInt bounds;
     public Grid grid;
@@ -27,7 +28,7 @@ public class tilemap_script : MonoBehaviour
                 TileBase tile = allTiles[x + y * bounds.size.x];
                 if (tile != null)
                 {
-                    Debug.Log("x:" + x + " y:" + y + " tile:" + tile.name);
+                    //Debug.Log("x:" + x + " y:" + y + " tile:" + tile.name);
                 }
                 /*else
                 {
@@ -35,6 +36,8 @@ public class tilemap_script : MonoBehaviour
                 }*/
             }
         }
+
+        playerScript = GameObject.FindGameObjectWithTag("Player").GetComponent<playerScript>();
     }
 
     public void Update()
@@ -47,10 +50,16 @@ public class tilemap_script : MonoBehaviour
 
         if (!coordinate.Equals(previousMousePos))
         {
-            Debug.Log(coordinateFalse);
+            //Debug.Log(coordinateFalse);
             Destroy(GameObject.Find("CursorObject(Clone)"));
             Instantiate(cursorSprite, new Vector3(coordinate.x, coordinate.y, -1), Quaternion.identity);
             previousMousePos = coordinate;
         }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            playerScript.Move(coordinateFalse);
+        }
     }
+
 }
