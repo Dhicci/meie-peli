@@ -12,10 +12,11 @@ public class tilemap_script : MonoBehaviour
 
     public GameObject cursorSprite;
     public Vector3 previousMousePos = new Vector3();
+    private Tilemap tilemap;
     void Awake()
     {
 
-        Tilemap tilemap = GetComponent<Tilemap>();
+        tilemap = GetComponent<Tilemap>();
         tilemap.CompressBounds();
 
         bounds = tilemap.cellBounds;
@@ -40,6 +41,22 @@ public class tilemap_script : MonoBehaviour
         playerScript = GameObject.FindGameObjectWithTag("Player").GetComponent<playerScript>();
     }
 
+    public string GetATile(Vector3 mouseCoordinates)
+    {
+        Vector3Int tileCoordinates = tilemap.WorldToCell(mouseCoordinates);
+        tileCoordinates.z = 0;
+        Debug.Log(tileCoordinates);
+        TileBase aTile = tilemap.GetTile(tileCoordinates);
+        if (aTile != null)
+        {
+            Debug.Log("pr‰‰ks");
+            return aTile.name;
+        } else
+        {
+            return "Unpassable";
+        }
+    }
+
     public void Update()
     {
         
@@ -58,7 +75,8 @@ public class tilemap_script : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            playerScript.Move(coordinateFalse);
+            string tileName = GetATile(previousMousePos);
+            playerScript.Move(coordinateFalse, tileName);
         }
     }
 
