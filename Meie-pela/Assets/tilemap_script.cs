@@ -49,7 +49,6 @@ public class tilemap_script : MonoBehaviour
         TileBase aTile = tilemap.GetTile(tileCoordinates);
         if (aTile != null)
         {
-            Debug.Log("pr‰‰ks");
             return aTile.name;
         } else
         {
@@ -67,7 +66,6 @@ public class tilemap_script : MonoBehaviour
 
         if (!coordinate.Equals(previousMousePos))
         {
-            //Debug.Log(coordinateFalse);
             Destroy(GameObject.Find("CursorObject(Clone)"));
             Instantiate(cursorSprite, new Vector3(coordinate.x, coordinate.y, -1), Quaternion.identity);
             previousMousePos = coordinate;
