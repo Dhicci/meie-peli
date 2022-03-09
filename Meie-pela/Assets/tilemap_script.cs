@@ -45,7 +45,6 @@ public class tilemap_script : MonoBehaviour
     {
         Vector3Int tileCoordinates = tilemap.WorldToCell(mouseCoordinates);
         tileCoordinates.z = 0;
-        Debug.Log(tileCoordinates);
         TileBase aTile = tilemap.GetTile(tileCoordinates);
         if (aTile != null)
         {

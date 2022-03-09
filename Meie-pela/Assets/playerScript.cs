@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 
 public class playerScript : MonoBehaviour
 {
-    [SerializeField] int energy = 2;
+    public int energy = 3;
 
     public Grid grid;
     private GameObject tileMap;
@@ -17,6 +17,7 @@ public class playerScript : MonoBehaviour
     private Vector3 movementEnd;
     private Vector3 movementStart;
     private float moveTime;
+    public bool myTurn;
     // Start is called before the first frame update
     void Start()
     {
@@ -41,8 +42,20 @@ public class playerScript : MonoBehaviour
             }
         }
 
-        
     }
+
+    /*private bool EndOfTurn()
+    {
+        if(energy == 0)
+        {
+            myTurn = false;
+            return true;
+        } else
+        {
+            return false;
+        }
+        
+    }*/
 
     public void UpdatePlayerPos()
     {
@@ -58,6 +71,15 @@ public class playerScript : MonoBehaviour
     //Move to a new position if that position is on an adjacent tile
     public void Move(Vector3Int mouseGridPos, string tileName)
     {
+        if (myTurn == false)
+        {
+            Debug.Log("my turn is false");
+            return;
+        }
+        if (energy < 1)
+        {
+            return;
+        }
         if (lerping == true)
         {
             return;
@@ -93,5 +115,25 @@ public class playerScript : MonoBehaviour
                 }
             }
         }
+        energy--;
     }
+
+    public bool MyTurn()
+    {
+        if (energy == 0)
+        {
+            UpdatePlayerPos();
+            myTurn = false;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /*IEnumerator PlayerTurnEnds()
+    {
+        yield return new WaitUntil(EndOfTurn);
+    }*/
 }
