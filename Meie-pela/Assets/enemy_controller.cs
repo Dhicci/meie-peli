@@ -6,7 +6,11 @@ using UnityEngine.Tilemaps;
 public class enemy_controller : MonoBehaviour
 {
 
-    [SerializeField] int energy = 2;
+    public int energy = 2;
+    private float enemyMoveTime;
+    private bool lerping = false;
+    private Vector3 enemyMovementStart;
+    private Vector3 enemyMovementEnd;
 
     public Grid grid;
     public Tilemap tileMap;
@@ -19,13 +23,23 @@ public class enemy_controller : MonoBehaviour
     void Start()
     {
         UpdateEnemyPos();
-        FindPath();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (lerping)
+        {
+            enemyMoveTime += Time.deltaTime * 4;
+            gameObject.transform.position = Vector2.Lerp(enemyMovementStart, new Vector3(enemyMovementEnd.x, enemyMovementEnd.y + 0.25f, 0), enemyMoveTime);
+            if (gameObject.transform.position == new Vector3(enemyMovementEnd.x, enemyMovementEnd.y + 0.25f, 0))
+            {
+                lerping = false;
+                enemyMoveTime = 0;
+                AI();
+            }
+        }
     }
     
     class pathTile
@@ -41,8 +55,13 @@ public class enemy_controller : MonoBehaviour
 
     //Google A* pathfinding if you are interested why and how this code works
     //Dont touch anything in this code. It is fragile, scary, inefficent and will break easily
-    private void FindPath()
+    public void FindPath()
     {
+        
+        if (energy < 1)
+        {
+            return;
+        }
         int loopNumber = 1;
         Vector3 startLocation = grid.CellToWorld(currentEnemyGridLocation);
         Vector3 targetLocation = target.transform.position;
@@ -144,7 +163,7 @@ public class enemy_controller : MonoBehaviour
             {
                 if (pathTiles[i].tileDistance == loopNumber)
                 {
-                    if (pathTiles[i].targetDistance < pathTiles[middleman].targetDistance/*)*/)
+                    if (pathTiles[i].targetDistance < pathTiles[middleman].targetDistance)
                     {
                         bool allowAddition = true;
                         foreach (pathTile JTile in usedTiles)
@@ -165,7 +184,6 @@ public class enemy_controller : MonoBehaviour
             }
             lastTile = pathTiles[middleman];
             usedTiles.Add(pathTiles[middleman]);
-            //Instantiate(marker, pathTiles[middleman].thisLocation, Quaternion.identity);
             currentGridLocation = pathTiles[middleman].thisGridLocation;
             currentLocation = pathTiles[middleman].thisLocation;
             loopNumber++;
@@ -188,6 +206,7 @@ public class enemy_controller : MonoBehaviour
                 lastpathTile = lastpathTile.previousTile;
             }
         }
+        AI();
     }
 
     public void UpdateEnemyPos()
@@ -197,6 +216,58 @@ public class enemy_controller : MonoBehaviour
         if (!enemyGridLocation.Equals(currentEnemyGridLocation))
         {
             currentEnemyGridLocation = enemyGridLocation;
+        }
+    }
+
+    private void AI()
+    {
+        GameObject[] markers = GameObject.FindGameObjectsWithTag("marker");
+
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject marker in markers)
+        {
+            Vector3 diff = marker.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = marker;
+                distance = curDistance;
+            }
+        }
+
+        //If there is distance between the player and the enemy move towards player
+        if (energy > 0 && markers.Length > 0)
+        {
+            enemyMovementEnd = closest.transform.position;
+            enemyMovementStart = transform.position;
+            lerping = true;
+            
+        } else if(energy > 0)
+        {
+            Debug.Log("attack");
+        }
+        if(energy < 1)
+        {
+            DeleteMarkers();
+        }
+        Destroy(closest);
+        energy--;
+    }
+
+    public void DoAction()
+    {
+        UpdateEnemyPos();
+        FindPath();
+    }
+
+    public void DeleteMarkers()
+    {
+        GameObject[] markersS = GameObject.FindGameObjectsWithTag("marker");
+        for(int i = markersS.Length - 1; i >= 0; i--)
+        {
+            Destroy(markersS[i]);
         }
     }
 }
