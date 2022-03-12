@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using TMPro;
 
 public class playerScript : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class playerScript : MonoBehaviour
     private Vector3 movementStart;
     private float moveTime;
     public bool myTurn;
+    public TextMeshProUGUI playerEnergy;
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +42,10 @@ public class playerScript : MonoBehaviour
                 moveTime = 0;
                 UpdatePlayerPos();
             }
+        }
+
+        if(myTurn) {
+            playerEnergy.text = energy.ToString();
         }
 
     }
@@ -101,6 +107,7 @@ public class playerScript : MonoBehaviour
                             movementEnd = grid.CellToWorld(mouseGridPos);
                             movementStart = gameObject.transform.position;
                             lerping = true;
+                            energy--;
                         }
                     } else
                     {
@@ -109,13 +116,13 @@ public class playerScript : MonoBehaviour
                             movementEnd = grid.CellToWorld(mouseGridPos);
                             movementStart = gameObject.transform.position;
                             lerping = true;
+                            energy--;
                         }
                     }
                     
                 }
             }
         }
-        energy--;
     }
 
     public bool MyTurn()
