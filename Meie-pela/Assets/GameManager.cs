@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public int turn = 1;
     public GameObject[] players;
     public GameObject[] enemies;
+    public TextMeshProUGUI turnText;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,6 +23,8 @@ public class GameManager : MonoBehaviour
 
     IEnumerator PlayerTurn()
     {
+        turnText.text = "Player turn";
+        turnText.color = Color.white;
         turn = 1;
         foreach (GameObject player in players)
         {
@@ -29,12 +33,13 @@ public class GameManager : MonoBehaviour
             yield return new WaitUntil(player.GetComponent<playerScript>().MyTurn);
         }
         yield return new WaitForSeconds(0.5f);
-        Debug.Log("enemy turn");
         EnemyTurn();
     }
 
     public void EnemyTurn()
     {
+        turnText.text = "Enemy turn";
+        turnText.color = Color.red;
         turn = 2;
         foreach (GameObject enemy in enemies)
         {
