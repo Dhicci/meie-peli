@@ -35,8 +35,8 @@ public class playerScript : MonoBehaviour
         if (lerping)
         {
             moveTime += Time.deltaTime * 7;
-            gameObject.transform.position = Vector2.Lerp(movementStart, new Vector3(movementEnd.x, movementEnd.y + 0.25f, 0), moveTime);
-            if (gameObject.transform.position == new Vector3(movementEnd.x, movementEnd.y + 0.25f, 0))
+            gameObject.transform.position = Vector2.Lerp(movementStart, new Vector3(movementEnd.x, movementEnd.y, 0), moveTime);
+            if (gameObject.transform.position == new Vector3(movementEnd.x, movementEnd.y, 0))
             {
                 lerping = false;
                 moveTime = 0;

@@ -32,8 +32,8 @@ public class enemy_controller : MonoBehaviour
         if (lerping)
         {
             enemyMoveTime += Time.deltaTime * 4;
-            gameObject.transform.position = Vector2.Lerp(enemyMovementStart, new Vector3(enemyMovementEnd.x, enemyMovementEnd.y + 0.25f, 0), enemyMoveTime);
-            if (gameObject.transform.position == new Vector3(enemyMovementEnd.x, enemyMovementEnd.y + 0.25f, 0))
+            gameObject.transform.position = Vector2.Lerp(enemyMovementStart, new Vector3(enemyMovementEnd.x, enemyMovementEnd.y, 0), enemyMoveTime);
+            if (gameObject.transform.position == new Vector3(enemyMovementEnd.x, enemyMovementEnd.y, 0))
             {
                 lerping = false;
                 enemyMoveTime = 0;
