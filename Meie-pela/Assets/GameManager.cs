@@ -10,6 +10,11 @@ public class GameManager : MonoBehaviour
     public GameObject[] players;
     public GameObject[] enemies;
     public TextMeshProUGUI turnText;
+
+    public GameObject winImage;
+    public GameObject loseImage;
+    public GameObject blackScreen;
+    public GameObject backButton;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +29,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ToMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
     IEnumerator PlayerTurn()
     {
         turnText.text = "Player turn";
@@ -36,7 +46,14 @@ public class GameManager : MonoBehaviour
             yield return new WaitUntil(player.GetComponent<playerScript>().MyTurn);
         }
         yield return new WaitForSeconds(0.5f);
-        EnemyTurn();
+        enemies = GameObject.FindGameObjectsWithTag("enemy");
+        if (enemies.Length == 0)
+        {
+            GameOver(true);
+        } else
+        {
+            EnemyTurn();
+        }
     }
 
     public void EnemyTurn()
@@ -44,6 +61,11 @@ public class GameManager : MonoBehaviour
         turnText.text = "Enemy turn";
         turnText.color = Color.red;
         turn = 2;
+        if (enemies.Length == 0)
+        {
+            GameOver(true);
+            return;
+        }
         foreach (GameObject enemy in enemies)
         {
             enemy.GetComponent<enemy_controller>().energy = 2;
@@ -62,4 +84,22 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         NewTurn();
     }
+
+    public void GameOver(bool victory)
+    {
+        if (victory)
+        {
+            //Display victory
+            Debug.Log("victory");
+            winImage.SetActive(true);
+        } else
+        {
+            //Display loss
+            Debug.Log("Defeat");
+            loseImage.SetActive(true);
+        }
+        backButton.SetActive(true);
+        blackScreen.SetActive(true);
+    }
+
 }

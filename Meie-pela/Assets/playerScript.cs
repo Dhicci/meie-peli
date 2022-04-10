@@ -7,10 +7,14 @@ using TMPro;
 public class playerScript : MonoBehaviour
 {
     public int energy = 3;
+    [SerializeField] int playerHp = 3;
 
     public Grid grid;
     private GameObject tileMap;
     public Vector3Int previousPlayerGridLocation = new Vector3Int();
+    public GameObject target;
+    public GameObject fireBall;
+    public bool casting = false;
 
     private TileBase[] allTiles;
     private BoundsInt bounds;
@@ -32,6 +36,35 @@ public class playerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (casting)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
+
+                RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
+                if (hit.collider != null)
+                {
+                    Debug.Log("casted");
+                    //Debug.Log(hit.collider.gameObject.name);
+                    if (hit.collider.gameObject.tag == "target")
+                    {
+                        Debug.Log("casted");
+                        GameObject aFireBall = Instantiate(fireBall, gameObject.transform.position, Quaternion.identity);
+                        aFireBall.GetComponent<fireballScript>().Launch(hit.collider.gameObject.transform.position, gameObject.transform.position);
+                        GameObject[] destroyArray = GameObject.FindGameObjectsWithTag("target");
+                        for (int i = destroyArray.Length - 1; i >= 0; i--)
+                        {
+                            Destroy(destroyArray[i]);
+                        }
+                        casting = false;
+                        energy -= 1;
+                    }
+                }
+            }
+        }
+
         if (lerping)
         {
             moveTime += Time.deltaTime * 7;
@@ -77,6 +110,10 @@ public class playerScript : MonoBehaviour
     //Move to a new position if that position is on an adjacent tile
     public void Move(Vector3Int mouseGridPos, string tileName)
     {
+        if (casting)
+        {
+            return;
+        }
         if (myTurn == false)
         {
             Debug.Log("my turn is false");
@@ -139,8 +176,46 @@ public class playerScript : MonoBehaviour
         }
     }
 
-    /*IEnumerator PlayerTurnEnds()
+    public void Cast()
     {
-        yield return new WaitUntil(EndOfTurn);
-    }*/
+        if (casting)
+        {
+            return;
+        }
+        casting = true;
+
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                if ((x == 0 && y == 0) == false)
+                {
+                    if (previousPlayerGridLocation.y % 2 == 0)
+                    {
+                        if (false == ((previousPlayerGridLocation.x + x) - 1 == previousPlayerGridLocation.x && ((previousPlayerGridLocation.y + y) - 1 == previousPlayerGridLocation.y || (previousPlayerGridLocation.y + y) + 1 == previousPlayerGridLocation.y)))
+                        {
+                            Instantiate(target, grid.CellToWorld(new Vector3Int(previousPlayerGridLocation.x + x, previousPlayerGridLocation.y + y, previousPlayerGridLocation.z)), Quaternion.identity);
+                        }
+                    }
+                    else
+                    {
+                        if (false == ((previousPlayerGridLocation.x + x) + 1 == previousPlayerGridLocation.x && ((previousPlayerGridLocation.y + y) - 1 == previousPlayerGridLocation.y || (previousPlayerGridLocation.y + y) + 1 == previousPlayerGridLocation.y)))
+                        {
+                            Instantiate(target, grid.CellToWorld(new Vector3Int(previousPlayerGridLocation.x + x, previousPlayerGridLocation.y + y, previousPlayerGridLocation.z)), Quaternion.identity);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void PlayerHealth(int deduction)
+    {
+        playerHp -= deduction;
+        if (playerHp <= 0)
+        {
+            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>().GameOver(false);
+        }
+    }
+
 }

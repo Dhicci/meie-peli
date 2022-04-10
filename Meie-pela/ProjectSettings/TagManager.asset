@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - tilemap
+  - marker
+  - target
+  - enemy
+  - SoundManager
   layers:
   - Default
   - TransparentFX

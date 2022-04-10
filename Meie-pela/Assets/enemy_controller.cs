@@ -7,6 +7,7 @@ public class enemy_controller : MonoBehaviour
 {
 
     public int energy = 2;
+    [SerializeField] int hp = 2;
     private float enemyMoveTime;
     private bool lerping = false;
     private Vector3 enemyMovementStart;
@@ -209,6 +210,20 @@ public class enemy_controller : MonoBehaviour
         AI();
     }
 
+    public void EnemyHealth(int deduction)
+    {
+        hp -= deduction;
+        if (hp <= 0)
+        {
+            GameObject[] allEnemies = GameObject.FindGameObjectsWithTag("enemy");
+            if (allEnemies.Length == 1)
+            {
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>().GameOver(true);
+            }
+            Destroy(gameObject);
+        }
+    }
+
     public void UpdateEnemyPos()
     {
         Vector3Int enemyGridLocation = grid.WorldToCell(gameObject.transform.position);
@@ -243,10 +258,12 @@ public class enemy_controller : MonoBehaviour
             enemyMovementEnd = closest.transform.position;
             enemyMovementStart = transform.position;
             lerping = true;
-            
+            target.GetComponent<AudioSource>().Play();
+
         } else if(energy > 0)
         {
             Debug.Log("attack");
+            target.GetComponent<playerScript>().PlayerHealth(1);
         }
         if(energy < 1)
         {
