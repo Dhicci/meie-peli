@@ -1,2 +1,2 @@
 # meie-peli
-Mänguprototüüp videomängude disaini jaoks
+Mänguprototüüp Videomängude Disain õppeaine raames
